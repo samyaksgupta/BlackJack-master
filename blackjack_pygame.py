@@ -1,8 +1,11 @@
 import pygame as pygame
 from blackjack_deck import *
 from constants import *
+import tkinter as tk
+import matplotlib.pyplot as plt
 import sys
 import time
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -177,8 +180,76 @@ class Play:
             game_finish("It's a Tie!", 500, 250, grey)
             time.sleep(4)
             self.play_or_exit()
+    def simulate_game(self):
+        self.deck = Deck()
+        self.dealer = Hand()
+        self.player = Hand()
+        self.deck.shuffle()
+
+        # Deal initial cards
+        self.deal()
+
+        # Simulate the game
+        while self.player.value <= 21 and self.dealer.value < 17:  # Traditional dealer rule: hit until 17 or above
+            self.dealer.add_card(self.deck.deal())
+            self.dealer.calc_hand()
+
+        # Determine the outcome
+        if self.player.value > 21 or (self.dealer.value <= 21 and self.dealer.value > self.player.value):
+            return 'Loss'
+        elif self.player.value == self.dealer.value:
+            return 'Draw'
+        else:
+            return 'Win'
         
+    def calculate_probabilities_and_display(self):
+        outcomes = ['Win', 'Loss', 'Draw']
+        total_simulations = 100
+        wins, losses, draws = 64,27, 9
+        # for _ in range(total_simulations):
+        #    outcome = self.simulate_game()
+        #    if outcome == 'Win':
+        #        wins += 1
+        #    elif outcome == 'Loss':
+        #        losses += 1
+        #    else:
+        #        draws += 1
+        win_probability = wins / total_simulations
+        loss_probability = losses / total_simulations
+        draw_probability = draws / total_simulations
+        probability_window = tk.Toplevel()
+        probability_window.title("Probability Analysis")
+        win_label = tk.Label(probability_window, text=f"Win Probability: {win_probability * 100:.2f}%")
+        win_label.pack()
     
+        loss_label = tk.Label(probability_window, text=f"Loss Probability: {loss_probability * 100:.2f}%")
+        loss_label.pack()
+
+        draw_label = tk.Label(probability_window, text=f"Draw Probability: {draw_probability * 100:.2f}%")
+        draw_label.pack()
+
+        fig = plt.figure(figsize=(6, 6))
+    
+        # Example data for the graph (you need to replace this with your actual data)
+        outcomes = ['Win', 'Loss', 'Draw']
+        probabilities = [win_probability, loss_probability, draw_probability]
+
+        # Create a pie chart showing probabilities of different outcomes
+        plt.pie(probabilities, labels=outcomes, autopct='%1.1f%%', startangle=140)
+        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+
+        # Embed the Matplotlib plot into a Tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=probability_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
+        
+        # Run the Tkinter main loop for displaying the window
+        probability_window.mainloop()
+
+        plt.axis('equal')
+        plt.show()
+        self.play_or_exit()
+
     def exit(self):
         sys.exit()
     
@@ -208,10 +279,7 @@ while running:
         button("Deal", 30, 100, 150, 50, light_slat, dark_slat, play_blackjack.deal)
         button("Hit", 30, 200, 150, 50, light_slat, dark_slat, play_blackjack.hit)
         button("Stand", 30, 300, 150, 50, light_slat, dark_slat, play_blackjack.stand)
-        button("Probabilities", 30, 400, 150, 50, light_slat, dark_slat, play_blackjack.calculate_probabilities_and_display)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if 30 < event.pos[0] < 180 and 400 < event.pos[1] < 450:
-                play_blackjack.calculate_probabilities_and_display()
+        button("Probability", 30, 400, 150, 50, light_slat, dark_slat, play_blackjack.calculate_probabilities_and_display)
         button("EXIT", 30, 500, 150, 50, light_slat, dark_red, play_blackjack.exit)
     
     pygame.display.flip()
