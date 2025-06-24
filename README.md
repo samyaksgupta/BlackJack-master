@@ -7,6 +7,5 @@ the basic games begins with classic black jack situation and you have to make yo
 ![image](https://github.com/user-attachments/assets/8fbdd17b-e6f6-44c7-bb7f-8f32c6ab5650)
 
 ![image](https://github.com/user-attachments/assets/03f45243-1650-46bf-b101-43be6bdf7d5a)
-
-
+when you click on the probability button you would be greeted with a new tab giving stats of your win or loses
 ![Screenshot 2025-06-25 013423](https://github.com/user-attachments/assets/48e93cbe-db52-425a-bec1-c648c6e05439)
